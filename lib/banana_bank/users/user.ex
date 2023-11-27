@@ -18,6 +18,7 @@ defmodule BananaBank.Users.User do
     user
     |> cast(params, @required_params)
     |> validate_required(@required_params)
+    |> unique_constraint(:email, name: "email_unique_index")
     |> validate_length(:name, min: 3)
     |> validate_length(:cep, is: 8)
     |> validate_format(:email, ~r/@/)
