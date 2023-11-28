@@ -3,9 +3,8 @@ defmodule BananaBank.Users.User do
   import Ecto.Changeset
 
   @required_params [:name, :password, :email, :cep]
-  @exhibit_params [:id, :name, :email, :cep]
 
-  @derive {Jason.Encoder, only: @exhibit_params}
+  @derive {Jason.Encoder, only: [:id, :name, :email, :cep]}
   schema "users" do
     field :name,          :string
     field :password,      :string, virtual: true
@@ -16,15 +15,27 @@ defmodule BananaBank.Users.User do
     timestamps()
   end
 
-  def changeset(user \\ %__MODULE__{}, params) do
+  def changeset(params) do
+    %__MODULE__{}
+    |> cast(params, @required_params)
+    |> perform_validation(@required_params)
+    |> add_password_hash()
+  end
+
+  def changeset(user, params) do
     user
     |> cast(params, @required_params)
-    |> validate_required(@required_params)
+    |> perform_validation([:name, :email, :cep])
+    |> add_password_hash()
+  end
+
+  defp perform_validation(user, required_params) do
+    user
+    |> validate_required(required_params)
     |> unique_constraint(:email, name: "email_unique_index")
     |> validate_length(:name, min: 3)
     |> validate_length(:cep, is: 8)
     |> validate_format(:email, ~r/@/)
-    |> add_password_hash()
   end
 
   defp add_password_hash(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do
