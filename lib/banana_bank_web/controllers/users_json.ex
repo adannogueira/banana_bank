@@ -1,6 +1,4 @@
 defmodule BananaBankWeb.UsersJSON do
-  alias BananaBank.Users.User
-
   def create(%{user: user}) do
     %{
       message: "User created succesfully, welcome to BananaBank",
@@ -8,7 +6,10 @@ defmodule BananaBankWeb.UsersJSON do
     }
   end
 
+  def delete(%{user: user}), do: %{message: "User deleted successfully", data: user}
+
   def get(%{user: user}), do: %{data: user}
 
   def update(%{user: user}), do: %{message: "User updated successfully", data: user}
+
 end
