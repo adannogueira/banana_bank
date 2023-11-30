@@ -1,8 +1,7 @@
 defmodule BananaBankWeb.UsersControllerTest do
   use BananaBankWeb.ConnCase
 
-  alias BananaBank.Users
-  alias Users.User
+  import ExMachinaFactory
 
   describe "create/2" do
     test "creates user successfully", %{conn: conn} do
@@ -33,14 +32,13 @@ defmodule BananaBankWeb.UsersControllerTest do
 
   describe "delete/2" do
     test "deletes user successfully", %{conn: conn} do
-      params = %{name: "Test User", cep: "12345678", email: "test@user.com", password: "123456"}
-      {:ok, %User{id: id}} = Users.create(params)
+      %{id: id} = insert(:user)
       response = conn
       |> delete(~p"/api/users/#{id}")
       |> json_response(:ok)
 
       assert  %{
-        "data" => %{"cep" => "12345678", "email" => "test@user.com", "id" => id, "name" => "Test User"}
+        "data" => %{"cep" => "12345678", "email" => "test@user.com", "id" => ^id, "name" => "Test User"}
       } = response
     end
 
